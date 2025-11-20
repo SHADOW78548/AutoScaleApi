@@ -20,6 +20,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build with Maven
+        working-directory: AutoScaleApi
         run: mvn clean package -DskipTests
 
       - name: Deploy to Elastic Beanstalk
