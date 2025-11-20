@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  #  allows manual trigger from GitHub UI
+  workflow_dispatch:  # allows manual trigger from GitHub UI
 
 jobs:
   build-and-deploy:
@@ -21,7 +21,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-     
+      - name: Build with Maven
+        working-directory: AutoScaleApi
+        run: mvn clean package -DskipTests
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
@@ -32,4 +34,4 @@ jobs:
           environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
           region: ${{ secrets.AWS_REGION }}
           version_label: github-${{ github.run_number }}
-          deployment_package: AutoScaleApi/target/AutoScaleApi-0.0.1-SNAPSHOT.jar  # ✅ correct path to JAR
+          deployment_package: AutoScaleApi/target/AutoScaleApi-0.0.1-SNAPSHOT.jar
