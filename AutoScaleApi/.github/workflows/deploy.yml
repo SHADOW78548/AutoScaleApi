@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -19,11 +18,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: maven
 
-      - name: Build with Maven
-        working-directory: AutoScaleApi
-        run: mvn clean package -DskipTests
+      - name: Build with Maven Wrapper
+        run: ./mvnw clean package -DskipTests
+
+      - name: List target folder contents (debug step)
+        run: ls -l target
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
@@ -34,4 +34,4 @@ jobs:
           environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
           region: ${{ secrets.AWS_REGION }}
           version_label: github-${{ github.run_number }}
-          deployment_package: AutoScaleApi/target/AutoScaleApi-0.0.1-SNAPSHOT.jar
+          deployment_package: target/AutoScaleApi-0.0.1-SNAPSHOT.jar
