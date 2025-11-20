@@ -22,7 +22,6 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        working-directory: AutoScaleApi/AutoScaleApi
         run: mvn clean package -DskipTests
 
       - name: Deploy to Elastic Beanstalk
@@ -34,4 +33,4 @@ jobs:
           environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
           region: ${{ secrets.AWS_REGION }}
           version_label: github-${{ github.run_number }}
-          deployment_package: AutoScaleApi/AutoScaleApi/target/AutoScaleApi-0.0.1-SNAPSHOT.jar
+          deployment_package: target/AutoScaleApi-0.0.1-SNAPSHOT.jar
