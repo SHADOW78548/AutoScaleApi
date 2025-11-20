@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -22,7 +22,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        working-directory: AutoScaleApi
+        working-directory: AutoScaleApi/AutoScaleApi
         run: mvn clean package -DskipTests
 
       - name: Deploy to Elastic Beanstalk
@@ -34,4 +34,4 @@ jobs:
           environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
           region: ${{ secrets.AWS_REGION }}
           version_label: github-${{ github.run_number }}
-          deployment_package: AutoScaleApi/target/AutoScaleApi-0.0.1-SNAPSHOT.jar
+          deployment_package: AutoScaleApi/AutoScaleApi/target/AutoScaleApi-0.0.1-SNAPSHOT.jar
