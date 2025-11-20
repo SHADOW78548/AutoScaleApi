@@ -3,7 +3,8 @@ name: CI/CD to Elastic Beanstalk
 on:
   push:
     branches:
-      - main   # or 'master' if that's your default branch
+      - main
+  workflow_dispatch:  #  allows manual trigger from GitHub UI
 
 jobs:
   build-and-deploy:
@@ -18,10 +19,11 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: maven
 
       - name: Build with Maven
-        working-directory: AutoScaleApi
-        run: mvn clean package -DskipTests
+        working-directory: AutoScaleApi  #  go into the subfolder where pom.xml lives
+        run: ./mvnw clean package -DskipTests
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
@@ -32,4 +34,4 @@ jobs:
           environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
           region: ${{ secrets.AWS_REGION }}
           version_label: github-${{ github.run_number }}
-          deployment_package: target/AutoScaleApi-0.0.1-SNAPSHOT.jar
+          deployment_package: AutoScaleApi/target/AutoScaleApi-0.0.1-SNAPSHOT.jar  # ✅ correct path to JAR
