@@ -22,7 +22,6 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        working-directory: AutoScaleApi  #  go into the subfolder where pom.xml lives
         run: mvn clean package -DskipTests
 
       - name: Deploy to Elastic Beanstalk
