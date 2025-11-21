@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AutoScaleApi - Sujit Mondal</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --cog-navy: #002244;
+      --cog-blue: #0066CC;
+      --cog-light: #F5F8FF;
+      --cog-bg: #ffffff;
+      --text: #1a1a1a;
+      --muted: #5f6b7a;
+      --accent: #00A1E0;
+      --border: #e6ecf5;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      font-family: 'Inter', 'Roboto', system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, var(--cog-light) 0%, #eef3ff 60%, #f9fbff 100%);
+    }
+
+    /* Header / Navbar */
+    header {
+      position: sticky; top: 0; z-index: 1000;
+      background: var(--cog-bg);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: saturate(140%) blur(8px);
+    }
+
+    .nav-wrap {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1rem;
+    }
+
+    .brand {
+      display:flex; align-items:center; gap:0.75rem;
+    }
+
+    .brand img {
+      height: 36px; width:auto; object-fit: contain;
+    }
+
+    .brand h1 {
+      margin: 0; font-size: 1.3rem; font-weight: 700; letter-spacing: 0.2px; color: var(--cog-navy);
+    }
+
+    nav a {
+      display:inline-block;
+      color: var(--cog-navy);
+      text-decoration: none;
+      font-weight: 600;
+      margin: 0 0.5rem;
+      padding: 0.5rem 0.6rem;
+      border-radius: 6px;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    nav a:hover { color: var(--cog-blue); background: #f0f6ff; }
+    nav a.active { color: #fff; background: var(--cog-blue); }
+
+    /* Main */
+    main {
+      max-width: 1100px;
+      margin: 1.25rem auto;
+      padding: 0 1rem 2rem;
+      animation: fadeIn 0.6s ease;
+    }
+
+    /* Hero */
+    .hero {
+      background: var(--cog-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display:flex; align-items:center; justify-content: space-between; gap:1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    .hero-copy h2 {
+      margin: 0 0 0.4rem 0;
+      font-size: 1.6rem; color: var(--cog-navy);
+    }
+
+    .hero-copy p {
+      margin: 0.2rem 0;
+      color: var(--muted);
+    }
+
+    .hero-cta a {
+      display:inline-block;
+      margin-right:0.5rem;
+      text-decoration:none;
+      font-weight:600;
+      padding:0.6rem 0.9rem;
+      border-radius:8px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn-primary { background: var(--cog-blue); color:#fff; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,102,204,0.25); }
+    .btn-secondary { background:#f0f6ff; color: var(--cog-navy); }
+    .btn-secondary:hover { background:#e6f0ff; }
+
+    /* Sections */
+    .section {
+      display: none; /* hidden by default; JS shows active */
+      margin-top: 1.25rem;
+      background: var(--cog-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+      animation: slideUp 0.4s ease;
+    }
+
+    .section h3 {
+      margin: 0 0 0.75rem 0;
+      font-size: 1.25rem; color: var(--cog-navy);
+    }
+
+    .meta-grid {
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem; margin: 0.75rem 0 0.5rem;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      background: #fcfdff;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.06); }
+
+    .list { list-style: none; padding:0; margin:0; }
+    .list li { padding: 0.4rem 0; color: var(--text); }
+    .muted { color: var(--muted); }
+
+    /* Footer */
+    footer {
+      text-align:center; color: var(--muted);
+      padding: 1.2rem 1rem 2rem; font-size: 0.95rem;
+    }
+
+    /* Animations */
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    @keyframes slideUp { from{opacity:0; transform: translateY(8px);} to{opacity:1; transform: translateY(0);} }
+
+    /* Responsive */
+    @media (max-width:768px){
+      .hero { flex-direction: column; align-items: flex-start; }
+      nav a { margin: 0 0.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="nav-wrap">
+      <div class="brand">
+        <img src="https://tse1.mm.bing.net/th/id/OIP.UmrpHhJxwpiUGMa_sJ0T0gHaEK?w=297&h=180&c=7&r=0&o=7&dpr=1.1&pid=1.7&rm=3" alt="Cognizant Logo">
+        <h1>AutoScaleApi</h1>
+      </div>
+      <nav>
+        <a href="#about" data-target="about" class="active">About</a>
+        <a href="#skills" data-target="skills">Skills</a>
+        <a href="#project" data-target="project">Project</a>
+        <a href="#benefits" data-target="benefits">Benefits</a>
+        <a href="#contact" data-target="contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main>
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-copy">
+        <h2>Build. Scale. Automate.</h2>
+        <p class="muted">Cloud‑native microservices with DevOps hooks for resilient enterprise delivery.</p>
+        <p class="muted">By Sujit Mondal • Programmer Analyst Trainee • Kolkata, India</p>
+      </div>
+      <div class="hero-cta">
+        <a class="btn-primary" href="https://shadow78548.github.io/My_Portfolio/" target="_blank">View Portfolio</a>
+        <a class="btn-secondary" href="https://github.com/SHADOW78548" target="_blank">GitHub Profile</a>
+      </div>
+    </div>
+
+    <!-- Sections (only one visible at a time) -->
+    <section id="about" class="section" style="display:block;">
+      <h3>About</h3>
+      <div class="meta-grid">
+        <div class="card">
+          <strong>Sujit Mondal</strong>
+          <p class="muted">Programmer Analyst Trainee • DLL API Connect DevOps</p>
+          <p>Kolkata, India</p>
+        </div>
+        <div class="card">
+          <strong>Professional focus</strong>
+          <ul class="list">
+            <li>Enterprise software delivery</li>
+            <li>Cloud deployments with zero‑waste cost control</li>
+            <li>Stakeholder‑ready documentation and clean CI/CD</li>
+          </ul>
+        </div>
+      </div>
+      <p class="muted">I design pragmatic, secure, and cost‑aware backend systems that scale smoothly and remain easy to operate.</p>
+    </section>
+
+	<section id="skills" class="section">
+	  <h3>Skills</h3>
+	  <div class="meta-grid">
+	    <div class="card">
+	      <strong>Spring Boot & Microservices</strong>
+	      <ul class="list">
+	        <li>Spring Boot backend troubleshooting & REST API development</li>
+	        <li>Microservices architecture & modular design</li>
+	      </ul>
+	    </div>
+	    <div class="card">
+	      <strong>Security & Integration</strong>
+	      <ul class="list">
+	        <li>JWT / OAuth authentication</li>
+	        <li>REST APIs & Web API development</li>
+	      </ul>
+	    </div>
+	    <div class="card">
+	      <strong>Programming & Databases</strong>
+	      <ul class="list">
+	        <li>Core Java & Java 8</li>
+	        <li>MySQL database design & queries</li>
+	      </ul>
+	    </div>
+	    <div class="card">
+	      <strong>Cloud & Tools</strong>
+	      <ul class="list">
+	        <li>Azure Fundamentals</li>
+			<li>CI/CD with GitHub Actions</li>
+	        <li>GitHub Copilot for productivity</li>
+	      </ul>
+	    </div>
+	  </div>
+	</section>
+    <section id="project" class="section">
+      <h3>AutoScaleApi project</h3>
+      <div class="meta-grid">
+        <div class="card">
+          <strong>Idea ID</strong>
+          <p>804934</p>
+        </div>
+        <div class="card">
+          <strong>Title</strong>
+          <p>AutoScaleAPI: Serverless Microservices with DevOps Hooks</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1rem;">
+        <strong>Problem statement</strong>
+        <p class="muted">
+          Enterprises need microservices that scale on demand without heavy infrastructure overhead. Traditional setups slow delivery,
+          increase cost, and require constant server care—especially in banking where reliability and speed are non‑negotiable.
+        </p>
+      </div>
+      <div class="card" style="margin-top:0.75rem;">
+        <strong>Solution overview</strong>
+        <p class="muted">
+          AutoScaleApi combines Spring Boot services with serverless functions (AWS Lambda/Azure Functions) behind an API Gateway and event triggers.
+          It runs only when needed, scales automatically, and integrates CI/CD, monitoring, and logging for low‑maintenance, high‑performance delivery.
+        </p>
+      </div>
+    </section>
+
+    <section id="benefits" class="section">
+      <h3>Benefits</h3>
+      <div class="card">
+        <strong>Soft Dollar – Cognizant</strong>
+        <p class="muted">
+          Reduced infrastructure management and faster release cycles via CI/CD and auto‑scaling, improving engineering velocity and operational clarity.
+        </p>
+      </div>
+    </section>
+
+    <section id="contact" class="section">
+      <h3>Contact & Credentials</h3>
+      <div class="meta-grid">
+        <div class="card">
+          <strong>People involved</strong>
+          <ul class="list">
+            <li>Name: Sujit Mondal</li>
+            <li>Employee ID: 2403435</li>
+            <li>Dated: <span id="currentDate"></span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <strong>Contact information</strong>
+          <ul class="list">
+            <li>Organization Email: <a href="mailto:sujit.mondal2@gmail.com">sujit.mondal2@gmail.com</a></li>
+            <li>Personal Email: <a href="mailto:shadow78548@gmail.com">shadow78548@gmail.com</a></li>
+            <li>Phone: <a href="tel:+918768571849">+91 8768571849</a></li>
+          </ul>
+        </div>
+        <div class="card">
+          <strong>Links</strong>
+          <ul class="list">
+            <li><a href="https://shadow78548.github.io/My_Portfolio/" target="_blank">Portfolio</a></li>
+            <li><a href="https://github.com/SHADOW78548" target="_blank">GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    © <span id="year"></span> AutoScaleApi • Designed by Sujit Mondal
+  </footer>
+
+  <script>
+    
+    const today = new Date();
+    document.getElementById('currentDate').textContent =
+      today.toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
+    document.getElementById('year').textContent = today.getFullYear();
+
+    const navLinks = document.querySelectorAll('nav a');
+    const sections = document.querySelectorAll('.section');
+
+    function showSection(id){
+      sections.forEach(sec => {
+        sec.style.display = (sec.id === id) ? 'block' : 'none';
+      });
+      navLinks.forEach(a => a.classList.toggle('active', a.dataset.target === id));
+      window.scrollTo({ top: document.querySelector('main').offsetTop - 10, behavior: 'smooth' });
+    }
+
+    navLinks.forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = a.dataset.target;
+        showSection(target);
+      });
+    });
+  </script>
+</body>
+</html>
