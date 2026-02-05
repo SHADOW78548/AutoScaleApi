@@ -1,6 +1,7 @@
 package com.shadow.AutoScaleApi.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,47 +18,65 @@ import com.shadow.AutoScaleApi.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
-	@Autowired
-	UserService userService;
-	
-	@Operation(summary = "Add a new user", description = "Creates a new user with the provided details")
-	@PostMapping("/addUser")
-	public ResponseEntity<Object> addUser(@Valid @RequestBody UserDto user) {
-		
-		return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUser(user));
-	}
-	@Operation(summary = "Delete an existing user", description = "Deletes the user with the specified ID")
-	@DeleteMapping("/deleteUser")
-	public ResponseEntity<Object> deleteUser(@RequestParam Long id) {
+    @Autowired
+    UserService userService;
 
-		return ResponseEntity.status(HttpStatus.OK).body(userService.deleteUser(id));
-	}
-	
-	
-	@Operation(summary = "Update an existing user", description = "Updates the details of the user with the provided information")
-	@PutMapping("/updateUser")
-	public ResponseEntity<Object> updateUser(@RequestBody UserDto user) {
+    // Inject secrets and environment name
+    @Value("${API_KEY:NOT_SET}")
+    private String apiKey;
 
-		return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(user));
-	}
-	
-	@Operation(summary = "Get a user by ID", description = "Retrieves the details of the user with the specified ID")
-	@GetMapping("/getUser")
-	public ResponseEntity<Object> getUser(@RequestParam Long id) {
+    @Value("${ENV_NAME:NOT_SET}")
+    private String envName;
 
-		return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(id));
-	}
-	
-	
-	@Operation(summary = "Get all users", description = "Retrieves a list of all users")
-	@GetMapping("/getUsers")
-	public ResponseEntity<Object> getUsers() {
+    @Operation(summary = "Add a new user", description = "Creates a new user with the provided details")
+    @PostMapping("/addUser")
+    public ResponseEntity<Object> addUser(@Valid @RequestBody UserDto user) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUser(user));
+    }
 
-		return ResponseEntity.status(HttpStatus.OK).body(userService.getUsers());
-	}
-	
+    @Operation(summary = "Delete an existing user", description = "Deletes the user with the specified ID")
+    @DeleteMapping("/deleteUser")
+    public ResponseEntity<Object> deleteUser(@RequestParam Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.deleteUser(id));
+    }
+
+    @Operation(summary = "Update an existing user", description = "Updates the details of the user with the provided information")
+    @PutMapping("/updateUser")
+    public ResponseEntity<Object> updateUser(@RequestBody UserDto user) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(user));
+    }
+
+    @Operation(summary = "Get a user by ID", description = "Retrieves the details of the user with the specified ID")
+    @GetMapping("/getUser")
+    public ResponseEntity<Object> getUser(@RequestParam Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(id));
+    }
+
+    @Operation(summary = "Get all users", description = "Retrieves a list of all users")
+    @GetMapping("/getUsers")
+    public ResponseEntity<Object> getUsers() {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUsers());
+    }
+
+    // ✅ New endpoint to fetch environment details and secret values
+    @Operation(summary = "Get environment info", description = "Fetches API_KEY and environment details")
+    @GetMapping("/environment-info")
+    public ResponseEntity<Map<String, String>> getEnvironmentInfo() {
+        Map<String, String> envDetails = new HashMap<>();
+        envDetails.put("environmentName", envName);
+        envDetails.put("apiKey", apiKey);
+        envDetails.put("javaVersion", System.getProperty("java.version"));
+        envDetails.put("osName", System.getProperty("os.name"));
+        envDetails.put("serverPort", System.getenv("PORT") != null ? System.getenv("PORT") : "8080");
+
+        return ResponseEntity.status(HttpStatus.OK).body(envDetails);
+    }
 }
