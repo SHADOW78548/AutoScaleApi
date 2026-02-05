@@ -38,7 +38,7 @@ jobs:
         with:
           name: AutoScaleApi
 
-      - name: Deploy to Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk1
         uses: einaregilsson/beanstalk-deploy@v21
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
